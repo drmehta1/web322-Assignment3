@@ -2,7 +2,12 @@
 * WEB322 – Assignment 03
 *
 * I declare that this assignment is my own work in accordance with Seneca's
-* Academic Integrity Policy.
+* Academic Integrity Policy:
+*
+* https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
+*
+* Name: ___Dhairya Rakeshkumar Mehta___________________ Student ID: _170367239_____________ Date: ________3rd December 2025______
+*
 ********************************************************************************/
 
 require("dotenv").config();
