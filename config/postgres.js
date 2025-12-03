@@ -1,7 +1,5 @@
 const { Sequelize } = require("sequelize");
 
-require("pg"); // required for Vercel
-
 let sequelize;
 
 async function connectPostgres() {
@@ -23,6 +21,9 @@ async function connectPostgres() {
   }
 
   await sequelize.authenticate();
+  console.log("🐘 Postgres connected");
+
+  return sequelize;
 }
 
 module.exports = { sequelize, connectPostgres };
