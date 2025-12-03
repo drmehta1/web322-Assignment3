@@ -1,73 +1,64 @@
-import path from "path";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
-import dotenv from "dotenv";
-dotenv.config();  // MUST BE FIRST
+// professor requirement
+require("pg");
 
+// ESM imports
 import express from "express";
-import clientSessions from "client-sessions";
-import { connectMongo } from "./config/mongo.js";
+import session from "client-sessions";
+import mongoose from "mongoose";
 import { sequelize } from "./config/postgres.js";
+import dotenv from "dotenv";
+
 import authRoutes from "./routes/authRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 
-// -------------------------------------------------------------
-// 1. TEST ENV VARIABLES
-// -------------------------------------------------------------
-console.log("PG HOST =", process.env.PG_HOST);
-console.log("PG USER =", process.env.PG_USER);
-console.log("PG DATABASE =", process.env.PG_DATABASE);
+dotenv.config();
 
-// -------------------------------------------------------------
-// 2. Connect MongoDB
-// -------------------------------------------------------------
-connectMongo();
-
-// -------------------------------------------------------------
-// 3. Connect PostgreSQL
-// -------------------------------------------------------------
-sequelize.authenticate()
-  .then(() => console.log("🐘 PostgreSQL Connected"))
-  .catch(err => console.error("PostgreSQL Error:", err));
-
-sequelize.sync();
-
-// -------------------------------------------------------------
-// 4. Setup Express App
-// -------------------------------------------------------------
 const app = express();
-const PORT = process.env.PORT || 8080;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.use(
-  clientSessions({
+  session({
     cookieName: "session",
     secret: process.env.SESSION_SECRET,
     duration: 24 * 60 * 60 * 1000,
   })
 );
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
-app.get("/", (req, res) => {
-  res.redirect("/login");
-});
-
-
-// -------------------------------------------------------------
-// 5. Routes
-// -------------------------------------------------------------
+// Routes
 app.use("/", authRoutes);
 app.use("/", taskRoutes);
 
-// -------------------------------------------------------------
-// 6. Start Server
-// -------------------------------------------------------------
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+// View engine
+app.set("view engine", "ejs");
+
+// Root
+app.get("/", (req, res) => res.redirect("/login"));
+
+// DB connect + Start
+async function start() {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("Mongo Connected");
+
+    await sequelize.authenticate();
+    await sequelize.sync();
+    console.log("PostgreSQL Connected");
+
+    if (!process.env.VERCEL) {
+      app.listen(process.env.PORT || 8080, () =>
+        console.log("Server running on port", process.env.PORT)
+      );
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+start();
+
+export default app;
