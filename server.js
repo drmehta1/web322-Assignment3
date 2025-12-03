@@ -1,3 +1,8 @@
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import dotenv from "dotenv";
 dotenv.config();  // MUST BE FIRST
 
@@ -47,6 +52,12 @@ app.use(
 );
 
 app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
+
 
 // -------------------------------------------------------------
 // 5. Routes
