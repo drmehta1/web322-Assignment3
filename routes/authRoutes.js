@@ -1,31 +1,22 @@
-import express from "express";
-import bcrypt from "bcryptjs";
-import User from "../models/User.js";
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const User = require("../models/User");
 
 const router = express.Router();
 
-// GET REGISTER
-router.get("/register", (req, res) => {
-  res.render("register");
-});
+router.get("/register", (req, res) => res.render("register"));
 
-// POST REGISTER
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   const hashed = await bcrypt.hash(password, 10);
-
   await User.create({ username, email, password: hashed });
 
   res.redirect("/login");
 });
 
-// GET LOGIN
-router.get("/login", (req, res) => {
-  res.render("login");
-});
+router.get("/login", (req, res) => res.render("login"));
 
-// POST LOGIN
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -39,10 +30,9 @@ router.post("/login", async (req, res) => {
   res.redirect("/dashboard");
 });
 
-// LOGOUT
 router.get("/logout", (req, res) => {
   req.session.reset();
   res.redirect("/login");
 });
 
-export default router;
+module.exports = router;

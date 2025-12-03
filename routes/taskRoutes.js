@@ -1,10 +1,10 @@
 const express = require("express");
-const Task = require("../models/Task.js");
-const { requireLogin } = require("../middleware/authMiddleware.js");
+const Task = require("../models/Task");
+const ensureLogin = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/dashboard", requireLogin, async (req, res) => {
+router.get("/dashboard", ensureLogin, async (req, res) => {
   const tasks = await Task.findAll({ where: { userId: req.session.user.id } });
 
   res.render("dashboard", {
@@ -15,16 +15,16 @@ router.get("/dashboard", requireLogin, async (req, res) => {
   });
 });
 
-router.get("/tasks", requireLogin, async (req, res) => {
+router.get("/tasks", ensureLogin, async (req, res) => {
   const tasks = await Task.findAll({ where: { userId: req.session.user.id } });
   res.render("tasks", { tasks });
 });
 
-router.get("/tasks/add", requireLogin, (req, res) => {
+router.get("/tasks/add", ensureLogin, (req, res) => {
   res.render("addTask");
 });
 
-router.post("/tasks/add", requireLogin, async (req, res) => {
+router.post("/tasks/add", ensureLogin, async (req, res) => {
   const { title, description, dueDate } = req.body;
 
   await Task.create({
@@ -38,12 +38,12 @@ router.post("/tasks/add", requireLogin, async (req, res) => {
   res.redirect("/tasks");
 });
 
-router.get("/tasks/edit/:id", requireLogin, async (req, res) => {
+router.get("/tasks/edit/:id", ensureLogin, async (req, res) => {
   const task = await Task.findByPk(req.params.id);
   res.render("editTask", { task });
 });
 
-router.post("/tasks/edit/:id", requireLogin, async (req, res) => {
+router.post("/tasks/edit/:id", ensureLogin, async (req, res) => {
   const { title, description, dueDate, status } = req.body;
 
   await Task.update(
@@ -54,7 +54,7 @@ router.post("/tasks/edit/:id", requireLogin, async (req, res) => {
   res.redirect("/tasks");
 });
 
-router.post("/tasks/delete/:id", requireLogin, async (req, res) => {
+router.post("/tasks/delete/:id", ensureLogin, async (req, res) => {
   await Task.destroy({ where: { id: req.params.id } });
   res.redirect("/tasks");
 });

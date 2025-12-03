@@ -1,68 +1,59 @@
 /********************************************************************************
 * WEB322 – Assignment 03
 *
-* Vercel Compatible Server.js
+* I declare that this assignment is my own work in accordance with Seneca's
+* Academic Integrity Policy.
 ********************************************************************************/
 
 require("dotenv").config();
-require("pg"); // forces Vercel to bundle pg
+require("pg"); // required for vercel
 
 const express = require("express");
-const path = require("path");
 const session = require("client-sessions");
+const path = require("path");
 
-// DB
 const connectMongo = require("./config/mongo");
 const { sequelize, connectPostgres } = require("./config/postgres");
 
-// Routes & Middleware
+const ensureLogin = require("./middleware/authMiddleware");
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/taskRoutes");
-const ensureLogin = require("./middleware/authMiddleware");
 
 const app = express();
 
-/* ------------------------------
-   VIEW ENGINE
-------------------------------- */
+/* --------------------------- VIEW ENGINE --------------------------- */
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-/* ------------------------------
-   STATIC FILES
-------------------------------- */
+/* --------------------------- STATIC + BODY PARSER --------------------------- */
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 
-/* ------------------------------
-   SESSION
-------------------------------- */
+/* --------------------------- SESSION --------------------------- */
 app.use(
   session({
     cookieName: "session",
     secret: process.env.SESSION_SECRET || "supersecret",
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
+    duration: 24 * 60 * 60 * 1000,
   })
 );
 
-/* ------------------------------
-   LAZY DB CONNECTION (VERCEL SAFE)
-------------------------------- */
-let dbReady = false;
+/* --------------------------- VERCEL FRIENDLY DB INIT --------------------------- */
+
+let dbConnected = false;
 
 async function ensureDatabases() {
-  if (dbReady) return;
+  if (dbConnected) return;
 
   try {
-    console.log("🔄 Connecting databases...");
+    console.log("🔄 Initializing database connections...");
     await connectMongo();
     await connectPostgres();
     await sequelize.sync();
-    console.log("✅ Databases ready!");
-    dbReady = true;
+    console.log("✅ All databases connected successfully.");
+    dbConnected = true;
   } catch (err) {
-    console.error("❌ DB Error:", err);
+    console.error("❌ Database connection failed:", err);
   }
 }
 
@@ -71,23 +62,16 @@ app.use(async (req, res, next) => {
   next();
 });
 
-/* ------------------------------
-   ROUTES
-------------------------------- */
+/* --------------------------- ROUTES --------------------------- */
 app.get("/", (req, res) => res.redirect("/login"));
 
-app.use("/", authRoutes);          // no login
-app.use("/", ensureLogin);         // everything after requires login
-app.use("/", taskRoutes);
+app.use("/", authRoutes);
+app.use("/", ensureLogin, taskRoutes);
 
-/* ------------------------------
-   404
-------------------------------- */
+/* --------------------------- 404 PAGE --------------------------- */
 app.use((req, res) => {
-  res.status(404).render("404", { message: "Page not found" });
+  res.status(404).render("404", { message: "Page Not Found" });
 });
 
-/* ------------------------------
-   EXPORT (NO LISTEN ON VERCEL)
-------------------------------- */
+/* --------------------------- EXPORT FOR VERCEL --------------------------- */
 module.exports = app;

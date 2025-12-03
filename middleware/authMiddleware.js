@@ -1,6 +1,6 @@
-function requireLogin(req, res, next) {
-  if (!req.session.user) return res.redirect("/login");
+module.exports = function ensureLogin(req, res, next) {
+  if (!req.session || !req.session.user) {
+    return res.redirect("/login");
+  }
   next();
-}
-
-module.exports = { requireLogin };
+};
