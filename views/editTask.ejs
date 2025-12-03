@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<h1 class="text-3xl font-bold mb-6">Edit Task</h1>
+
+<form method="POST" action="/tasks/edit/<%= task.id %>" class="space-y-4 bg-white p-6 rounded shadow max-w-xl">
+
+  <input name="title" value="<%= task.title %>" class="w-full border p-2 rounded" />
+
+  <textarea name="description" class="w-full border p-2 rounded"><%= task.description %></textarea>
+
+  <input type="date" name="dueDate" value="<%= task.dueDate.toISOString().split('T')[0] %>" class="w-full border p-2 rounded" />
+
+  <select name="status" class="border p-2 rounded w-full">
+    <option value="pending" <%= task.status === "pending" ? "selected" : "" %>>Pending</option>
+    <option value="completed" <%= task.status === "completed" ? "selected" : "" %>>Completed</option>
+  </select>
+
+  <button class="bg-blue-600 text-white px-4 py-2 rounded w-full">Save</button>
+
+</form>
+
+</body>
+</html>

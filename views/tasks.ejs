@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<h1 class="text-3xl font-bold mb-6">Your Tasks</h1>
+
+<a href="/tasks/add" class="bg-green-600 text-white px-4 py-2 rounded mb-4 inline-block">Add Task</a>
+
+<table class="w-full bg-white shadow rounded mt-4">
+  <tr class="bg-gray-200 text-left">
+    <th class="p-3">Title</th>
+    <th class="p-3">Due Date</th>
+    <th class="p-3">Status</th>
+    <th class="p-3">Actions</th>
+  </tr>
+
+  <% tasks.forEach(task => { %>
+    <tr>
+      <td class="p-3"><%= task.title %></td>
+      <td class="p-3"><%= task.dueDate.toDateString() %></td>
+      <td class="p-3"><%= task.status %></td>
+      <td class="p-3 space-x-2">
+        <a href="/tasks/edit/<%= task.id %>" class="text-blue-600">Edit</a>
+        <form method="POST" action="/tasks/delete/<%= task.id %>" class="inline">
+          <button class="text-red-600">Delete</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+</table>
+
+</body>
+</html>
