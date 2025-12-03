@@ -1,19 +1,32 @@
-import pg from "pg";
-import { Sequelize } from "sequelize";
+const { Sequelize } = require("sequelize");
 
-export const sequelize = new Sequelize({
-  dialectModule: pg, // Important for Vercel
-  database: process.env.PG_DATABASE,
-  username: process.env.PG_USER,
-  password: process.env.PG_PASSWORD,
-  host: process.env.PG_HOST,
-  port: process.env.PG_PORT,
-  dialect: "postgres",
-  logging: false,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-});
+let sequelize;
+
+async function connectPostgres() {
+  if (sequelize) return sequelize;
+
+  sequelize = new Sequelize(
+    process.env.PG_DATABASE,
+    process.env.PG_USER,
+    process.env.PG_PASSWORD,
+    {
+      host: process.env.PG_HOST,
+      port: process.env.PG_PORT,
+      dialect: "postgres",
+      logging: false,
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
+    }
+  );
+
+  await sequelize.authenticate();
+  console.log("🐘 PostgreSQL Connected");
+
+  return sequelize;
+}
+
+module.exports = { sequelize, connectPostgres };
