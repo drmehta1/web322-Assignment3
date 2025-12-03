@@ -41,6 +41,8 @@ app.use(
 );
 
 app.set("view engine", "ejs");
+app.set("views", "./views");
+
 
 // --- Routes ---
 app.get("/", (req, res) => res.redirect("/login"));

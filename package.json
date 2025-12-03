@@ -8,17 +8,16 @@
     "tw:build": "npx @tailwindcss/cli -i ./public/css/tailwind.css -o ./public/css/main.css --watch"
   },
   "dependencies": {
-  "bcryptjs": "^2.4.3",
-  "client-sessions": "^0.8.0",
-  "dotenv": "^17.2.3",
-  "ejs": "^3.1.10",
-  "express": "^5.2.1",
-  "mongoose": "^9.0.0",
-  "pg": "^8.16.3",
-  "pg-hstore": "^2.3.4",
-  "sequelize": "^6.37.7"
-}
-,
+    "bcryptjs": "^2.4.3",
+    "client-sessions": "^0.8.0",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "mongoose": "^9.0.0",
+    "pg": "^8.16.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7"
+  },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.17",
     "nodemon": "^3.1.0",
