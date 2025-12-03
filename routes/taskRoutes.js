@@ -1,8 +1,7 @@
-import express from "express";
-import { Task } from "../models/Task.js";
-import { requireLogin } from "../middleware/authMiddleware.js";
-
+const express = require("express");
 const router = express.Router();
+const { Task } = require("../models/Task.js");
+const { requireLogin } = require("../middleware/authMiddleware.js");
 
 // Dashboard
 router.get("/dashboard", requireLogin, async (req, res) => {
@@ -66,4 +65,4 @@ router.post("/tasks/delete/:id", requireLogin, async (req, res) => {
   res.redirect("/tasks");
 });
 
-export default router;
+module.exports = router;

@@ -8,6 +8,7 @@
     "start": "node server.js",
     "tw:build": "npx @tailwindcss/cli -i ./public/css/tailwind.css -o ./public/css/main.css --watch"
   },
+    "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "client-sessions": "^0.8.0",
